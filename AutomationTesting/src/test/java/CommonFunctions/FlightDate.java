@@ -38,17 +38,9 @@ public class FlightDate {
 		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("email")));
 		driver.findElement(By.name("email")).sendKeys("interia@email.com");
-		driver.findElement(By.name("password")).sendKeys("Dsop@123");
+		driver.findElement(By.name("password")).sendKeys("Dop@123");
 		driver.findElement(By.xpath("//button[@type='submit']")).click();
 		Thread.sleep(1000);
-
-//-----------------	Logout Function
-//			driver.findElement(By.xpath("//a[@data-toggle='dropdown']")).click();
-//			Thread.sleep(2000);
-//			driver.findElement(By.linkText("Logout")).click();
-//			Thread.sleep(2000);
-//			driver.quit();
-//------------------------------
 
 		WebElement userDashboard = null;
 		WebElement alertObj = null;
@@ -59,7 +51,8 @@ public class FlightDate {
 			System.out.println("Dashboard loaded: " + userDashboard.getText());
 		} catch (Exception e) {
 			try {
-				alertObj = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(@class,'alert-danger')]")));
+				alertObj = wait.until(ExpectedConditions
+						.visibilityOfElementLocated(By.xpath("//div[contains(@class,'alert-danger')]")));
 				System.out.println("Login failed: " + alertObj.getText());
 			} catch (Exception ex) {
 				System.out.println("Neither dashboard nor error message found.");
@@ -69,13 +62,13 @@ public class FlightDate {
 		if (userDashboard != null && userDashboard.isDisplayed()) {
 			wait.until(
 					ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"contact-info\"]/div/div[1]/h2")));
-			System.out.println(userDashboard.getText());
+//			System.out.println(userDashboard.getText());
 			System.out.println(driver.findElement(By.xpath("//*[@id=\"contact-info\"]/div/div[1]/h2")).getText());
 			driver.findElement(By.id("search-date")).click();
 			String year = driver.findElement(By.className("ui-datepicker-year")).getText();
 			String month = driver.findElement(By.className("ui-datepicker-month")).getText();
 
-			while (!year.equalsIgnoreCase("2027")) {
+			while (!year.equalsIgnoreCase("2026")) {
 				driver.findElement(By.xpath("//span[contains(@class,'ui-icon-circle-triangle-e')]")).click();
 				year = driver.findElement(By.className("ui-datepicker-year")).getText();
 			}
@@ -96,7 +89,7 @@ public class FlightDate {
 					}
 				}
 			}
-			
+
 //----------------------selecting from and to function--------------------------------
 			Select fFrom = new Select(driver.findElement(By.xpath("//select[contains(@class,'sf2')]")));
 			fFrom.selectByVisibleText("Hyderabad");
@@ -115,38 +108,63 @@ public class FlightDate {
 			driver.quit();
 		}
 
-		
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"flights-results\"]/div/div/div[2]")));
-
-		WebElement flightSearch = driver.findElement(By.className("flights_table"));
-		WebElement tb = flightSearch.findElement(By.tagName("tbody"));
-		
-		List<WebElement> trList = tb.findElements(By.tagName("tr"));
-
 		boolean airlineFound = false;
-		for (WebElement row : trList) {
-		    List<WebElement> td = row.findElements(By.tagName("td"));
+		try {
+			wait.until(ExpectedConditions
+					.visibilityOfElementLocated(By.xpath("//*[@id=\"flights-results\"]/div/div/div[2]")));
+			WebElement flightSearch = driver.findElement(By.className("flights_table"));
+			WebElement tb = flightSearch.findElement(By.tagName("tbody"));
 
-		    if (td.size() > 1) { 
-		        String airlineName = td.get(0).getText(); 
-		        if (airlineName.equalsIgnoreCase("Nagendra Airlines")) {
-		            System.out.println("Selecting airline: " + airlineName);
-		            WebElement selectButton = td.get(td.size() - 1).findElement(By.xpath(".//*[contains(text(), 'Select')]"));
-		            selectButton.click();
+			List<WebElement> trList = tb.findElements(By.tagName("tr"));
 
-		            System.out.println("Clicked 'Select' button for: " + airlineName);
-		            airlineFound = true;
-		            break; // Stop loop after clicking the button for "Soft Airlines"
-		        }
-		    }
+			for (WebElement row : trList) {
+				List<WebElement> td = row.findElements(By.tagName("td"));
+
+				if (td.size() > 1) {
+					String airlineName = td.get(0).getText();
+					if (airlineName.equalsIgnoreCase("Nagendra Airlines")) {
+						System.out.println("Selecting airline: " + airlineName);
+						WebElement selectButton = td.get(td.size() - 1)
+								.findElement(By.xpath(".//*[contains(text(), 'Select')]"));
+						selectButton.click();
+
+						System.out.println("Clicked 'Select' button for: " + airlineName);
+						airlineFound = true;
+						break; // Stop loop after clicking the button for "Soft Airlines"
+					}
+				}
+			}
+		} catch (Exception e) {
+			if (!airlineFound) {
+//				System.out.println("Soft Airlines not found in the table.");
+			}
 		}
-
-		if (!airlineFound) {
-		    System.out.println("Soft Airlines not found in the table.");
+	
+		try {
+			WebElement radioButton = driver.findElement(By.cssSelector("input[type='radio'][value='Business']"));
+			radioButton.click();
+		} catch (Exception e) {
 		}
-
-
 		
+		try {
+			driver.findElement(By.id("name")).sendKeys("abcd");
+		}catch(Exception e) {	
+		}
+		
+		try {
+			driver.findElement(By.xpath("//button[contains(@class,'insert-order active')]")).click();
+		}catch(Exception e) {
+			
+		}
+		
+//-----------------	Logout Function
+//		driver.findElement(By.xpath("//a[@data-toggle='dropdown']")).click();
+//		Thread.sleep(2000);
+//		driver.findElement(By.linkText("Logout")).click();
+//		Thread.sleep(2000);
+//		driver.quit();
+//------------------------------
+
 //--------------------	manually entering date 
 //			driver.findElement(By.id("search-date")).sendKeys("02/27/2025");
 //----------------------taking screenshot and saving in file and logout and close	
